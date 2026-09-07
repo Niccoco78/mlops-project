@@ -1,0 +1,61 @@
+# Configuration unique du projet : tout ce qui varie d'une experience a l'autre
+# se change ici, jamais dans le code.
+
+data:
+  csv_path: data/raw.csv
+  url: https://raw.githubusercontent.com/IBM/telco-customer-churn-on-icp4d/master/data/Telco-Customer-Churn.csv
+  target: Churn
+  positive_label: "Yes"
+  drop_columns: [customerID]
+  test_size: 0.2
+  random_state: 42
+
+features:
+  numeric: [tenure, MonthlyCharges, TotalCharges]
+  categorical:
+    - gender
+    - SeniorCitizen
+    - Partner
+    - Dependents
+    - PhoneService
+    - MultipleLines
+    - InternetService
+    - OnlineSecurity
+    - OnlineBackup
+    - DeviceProtection
+    - TechSupport
+    - StreamingTV
+    - StreamingMovies
+    - Contract
+    - PaperlessBilling
+    - PaymentMethod
+
+model:
+  type: logreg            # logreg | random_forest
+  params:                 # grille explorée par GridSearchCV (clés = paramètres du modèle)
+    C: [0.1, 1.0, 10.0]
+    solver: [lbfgs, liblinear]
+    # `penalty: [l2]` figurait dans le sujet : c'est déjà la valeur par défaut, et
+    # scikit-learn 1.9 déprécie ce paramètre. On ne le passe plus.
+  # Exemple pour random_forest :
+  # type: random_forest
+  # params:
+  #   n_estimators: [200, 400]
+  #   max_depth: [null, 10, 20]
+  #   min_samples_leaf: [1, 5]
+
+cv:
+  strategy: StratifiedKFold
+  n_splits: 5
+  scoring: roc_auc
+
+mlflow:
+  # Un backend SQLite est obligatoire pour le Model Registry : le stockage
+  # "fichiers" (./mlruns seul) ne le supporte pas.
+  tracking_uri: sqlite:///mlflow.db
+  experiment_name: churn-exp
+  registered_model_name: ChurnClassifier
+
+artifacts:
+  model_path: artifacts/model.joblib
+  reports_dir: reports
