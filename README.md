@@ -1,5 +1,7 @@
 # Churn Classifier — Pipelines scikit-learn + MLflow + FastAPI
 
+[![CI](https://github.com/Niccoco78/mlops-project/actions/workflows/ci.yml/badge.svg)](https://github.com/Niccoco78/mlops-project/actions/workflows/ci.yml)
+
 Projet MLOps. On entraîne un classifieur de churn sur le jeu
 **Telco Customer Churn**, avec un pipeline scikit-learn reproductible, un suivi
 complet des expériences dans **MLflow** (paramètres, métriques, artefacts, Model
@@ -154,6 +156,9 @@ make train && make docker-build && make docker-run
   Telco, reproductibilité du split, métriques, graphiques, et l'API de bout en
   bout avec un modèle entraîné à la volée (les tests passent sur un clone vide).
 - `make lint` : `ruff check` + `ruff format --check`.
+- **CI GitHub Actions** (`.github/workflows/ci.yml`) : à chaque push, lint + tests,
+  puis la chaîne complète `make data → train → evaluate` sur un runner vierge ;
+  les courbes et métriques du run sont attachées en artefact.
 
 ## Choix à connaître
 

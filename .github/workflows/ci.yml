@@ -1,0 +1,56 @@
+# Integration continue : a chaque push sur main (et sur chaque pull request),
+# on verifie le style et les tests, puis on rejoue la chaine complete depuis un
+# clone vide pour prouver que le projet est reproductible.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  qualite:
+    name: Lint + tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Dependances
+        run: pip install -r requirements.txt
+      # PY=python : pas de venv sur un runner jetable, on utilise le Python fourni.
+      - name: Lint (ruff)
+        run: make lint PY=python
+      - name: Tests (pytest)
+        run: make test PY=python
+
+  pipeline:
+    name: Entrainement + evaluation de bout en bout
+    runs-on: ubuntu-latest
+    needs: qualite
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Dependances
+        run: pip install -r requirements.txt
+      - name: Donnees
+        run: make data PY=python
+      - name: Entrainement (GridSearchCV + MLflow + registre)
+        run: make train PY=python
+      - name: Evaluation
+        run: make evaluate PY=python
+      - name: Metriques du run
+        run: cat reports/metrics.json
+      # Les courbes et le rapport sont telechargeables depuis la page du run.
+      - uses: actions/upload-artifact@v4
+        with:
+          name: reports
+          path: |
+            reports/*.png
+            reports/*.txt
+            reports/*.json
