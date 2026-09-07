@@ -1,6 +1,6 @@
 # Churn Classifier — Pipelines scikit-learn + MLflow + FastAPI
 
-Projet MLOps (M2, SupdeVinci). On entraîne un classifieur de churn sur le jeu
+Projet MLOps. On entraîne un classifieur de churn sur le jeu
 **Telco Customer Churn**, avec un pipeline scikit-learn reproductible, un suivi
 complet des expériences dans **MLflow** (paramètres, métriques, artefacts, Model
 Registry), et on sert le modèle retenu derrière une API **FastAPI** conteneurisable.
