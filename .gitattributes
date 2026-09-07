@@ -1,0 +1,3 @@
+# Fins de ligne LF dans le depot, quel que soit le systeme du contributeur.
+* text=auto eol=lf
+*.png binary
